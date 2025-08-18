@@ -1,0 +1,26 @@
+# Summary and Conclusions
+
+Based on the comprehensive analysis, here are the key variables contributing to churn and the reasons why, supported by the plots and statistical tests.
+
+### 1. Customer Tenure
+**Why it matters:** Tenure is the single most important variable contributing to churn. The analysis revealed a strong and statistically significant relationship between how long a customer has been with the company and whether they churned. The box plot for `Tenure` showed that churned customers have a very low median tenure, indicating that the churn problem is primarily an **early-life churn issue**.
+
+### 2. Complaint History
+**Why it matters:** The presence of a complaint is a critical warning sign for churn. The stacked bar chart for `Complain` vs. `Churn` showed that customers who have complained have a dramatically higher churn rate. This suggests that unresolved or poorly handled complaints are a major driver of customer loss.
+
+### 3. Days Since Last Order
+**Why it matters:** The number of days since a customer's last order is a powerful predictor of churn. The box plot for `DaySinceLastOrder` showed that churned customers have a significantly higher median number of days since their last purchase. This indicates that customer inactivity is a strong precursor to churn.
+
+### 4. Order Count
+**Why it matters:** The number of orders a customer has placed is directly related to their likelihood of churning. The box plot for `OrderCount` showed that churned customers have a significantly lower median number of orders. This highlights that customers who make only one or two purchases are at a much higher risk of leaving.
+
+### 5. Marital Status
+**Why it matters:** A customer's marital status is a significant demographic factor. The stacked bar chart for `MaritalStatus` vs. `Churn` showed that **single customers have the highest churn rate**. The Chi-Square test confirmed that this relationship is statistically significant, meaning the difference in churn rates across marital statuses is not due to random chance.
+
+### 6. Other Contributing Factors
+While less influential than the variables above, these factors also show a relationship with churn:
+
+* **Preferred Payment Mode:** Customers who prefer 'Cash on Delivery' (COD) have a higher churn rate.
+* **Preferred Login Device:** Customers using a generic 'Phone' as their login device have a slightly higher churn rate compared to those using 'Mobile Phone' or 'Computer'. This could point to a poorer user experience on specific mobile platforms.
+* **Warehouse-to-Home Distance:** The median distance to the warehouse is slightly higher for churned customers, suggesting that longer delivery times or higher costs may contribute to dissatisfaction and churn.
+* **Hours Spent on App:** Customers who spend fewer hours on the app are slightly more likely to churn, indicating that engagement is a factor in retention.
