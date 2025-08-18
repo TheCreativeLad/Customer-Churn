@@ -5,10 +5,10 @@ import os
 
 # 1. Load the trained model pipeline
 try:
-    model_pipeline = joblib.load('churn_model_pipeline.joblib')
+    model_pipeline = joblib.load('optimized_churn_model_pipeline.joblib')
     print("Model pipeline loaded successfully.")
 except FileNotFoundError:
-    print("Error: 'churn_model_pipeline.joblib' not found. Please make sure the file is in the same directory.")
+    print("Error: 'optimized_churn_model_pipeline.joblib' not found. Please make sure the file is in the same directory.")
     exit()
 
 # 2. Initialize the Flask application
