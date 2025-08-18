@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 from flask import Flask, request, jsonify
+import os
 
 # 1. Load the trained model pipeline
 try:
@@ -38,7 +39,10 @@ def predict():
     return jsonify(response)
 
 # 4. Run the Flask app
+
+is_development = os.environ.get('FLASK_ENV') == 'development'
+
 if __name__ == '__main__':
     # The host '0.0.0.0' makes the app accessible externally,
     # and debug=True allows for automatic reloading on code changes
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=is_development)
