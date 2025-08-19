@@ -1,66 +1,63 @@
+from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
-from flask import Flask, request, jsonify
-import os
 
-
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
-
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.impute import KNNImputer
-from sklearn.compose import ColumnTransformer
-from imblearn.pipeline import Pipeline
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import classification_report, confusion_matrix
-from imblearn.over_sampling import SMOTE
-import joblib
-
-
-
-# 1. Load the trained model pipeline
+# Load the entire trained pipeline, which includes the preprocessor and the classifier.
 try:
     model_pipeline = joblib.load('gradient_boosting_model_pipeline.joblib')
-    print("Model pipeline loaded successfully.")
 except FileNotFoundError:
-    print("Error: 'optimized_churn_model_pipeline.joblib' not found. Please make sure the file is in the same directory.")
+    print("Error: The model file 'gradient_boosting_model_pipeline.joblib' was not found.")
+    print("Please ensure the model file is in the same directory as this script.")
     exit()
 
-# 2. Initialize the Flask application
+# Extract the list of original numerical and categorical features from your notebook.
+# We will use this to manually ensure the order of features is correct.
+NUMERICAL_FEATURES = ['Tenure', 'WarehouseToHome', 'HourSpendOnApp', 'NumberOfDeviceRegistered', 
+                      'SatisfactionScore', 'NumberOfAddress', 'OrderAmountHikeFromlastYear', 
+                      'CouponUsed', 'OrderCount', 'DaySinceLastOrder', 'CashbackAmount']
+                      
+CATEGORICAL_FEATURES = ['PreferredLoginDevice', 'CityTier', 'PreferredPaymentMode', 'Gender', 
+                        'PreferedOrderCat', 'MaritalStatus', 'Complain']
+
+# Initialize the Flask application
 app = Flask(__name__)
 
-# 3. Define the prediction endpoint
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Get JSON data from the request
-    data = request.get_json(force=True)
-
-    # Convert the JSON data to a Pandas DataFrame
-    # The columns must be in the same order as your training data
-    df = pd.DataFrame([data])
-
-    # Make a prediction using the loaded model pipeline
-    prediction_result = model_pipeline.predict(df)
-    
-    # Get the prediction value
-    prediction = prediction_result[0]
-
-    # Return the prediction as a JSON response
-    if prediction == 1:
-        response = {'prediction': 'Churn: Yes'}
-    else:
-        response = {'prediction': 'Churn: No'}
-    
-    return jsonify(response)
-
-# 4. Run the Flask app
-
-is_development = os.environ.get('FLASK_ENV') == 'development'
+    """
+    Receives JSON data via a POST request, processes it, and returns a churn prediction.
+    """
+    try:
+        # Get the JSON data from the request body
+        json_data = request.get_json(force=True)
+        
+        # Convert the JSON data into a pandas DataFrame.
+        # It's crucial that this DataFrame is built from the json data.
+        df = pd.DataFrame([json_data])
+        
+        # --- CRITICAL STEP: Manually reorder columns to match the model's expectations ---
+        # We combine the numerical and categorical feature lists in the correct order.
+        expected_features = NUMERICAL_FEATURES + CATEGORICAL_FEATURES
+        
+        # We reindex the DataFrame to match the expected order. This ensures consistency
+        # regardless of how the JSON data was sent.
+        # We also fill missing values with 0 as a safe fallback.
+        df_reordered = df.reindex(columns=expected_features, fill_value=0)
+        
+        # Make a prediction using the reordered DataFrame.
+        # The model_pipeline will handle all the imputation, scaling, and one-hot encoding automatically.
+        prediction = model_pipeline.predict(df_reordered)
+        
+        # Convert the numpy array prediction to a string and return it
+        result = "Yes" if prediction[0] == 1 else "No"
+        
+        return jsonify({"prediction": result})
+        
+    except Exception as e:
+        # Return a clear error message if something goes wrong.
+        return jsonify({"error": str(e), "message": "An error occurred during prediction. Please check your JSON format."}), 400
 
 if __name__ == '__main__':
-    # The host '0.0.0.0' makes the app accessible externally,
-    # and debug=True allows for automatic reloading on code changes
-    app.run(host='0.0.0.0', port=5000, debug=is_development)
+    # Start the Flask application
+    # Set host='0.0.0.0' to make the server externally visible
+    app.run(host='0.0.0.0', port=5000, debug=True)
