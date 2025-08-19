@@ -5,7 +5,7 @@ import os
 
 # 1. Load the trained model pipeline
 try:
-    model_pipeline = joblib.load('optimized_churn_model_pipeline.joblib')
+    model_pipeline = joblib.load('gradient_boosting_model_pipeline.joblib')
     print("Model pipeline loaded successfully.")
 except FileNotFoundError:
     print("Error: 'optimized_churn_model_pipeline.joblib' not found. Please make sure the file is in the same directory.")
