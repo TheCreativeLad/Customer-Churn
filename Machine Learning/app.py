@@ -3,6 +3,24 @@ import pandas as pd
 from flask import Flask, request, jsonify
 import os
 
+
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import KNNImputer
+from sklearn.compose import ColumnTransformer
+from imblearn.pipeline import Pipeline
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from imblearn.over_sampling import SMOTE
+import joblib
+
+
+
 # 1. Load the trained model pipeline
 try:
     model_pipeline = joblib.load('gradient_boosting_model_pipeline.joblib')
